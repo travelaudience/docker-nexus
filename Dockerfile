@@ -48,12 +48,15 @@ RUN mkdir -p ${NEXUS_DATA}/etc ${NEXUS_DATA}/log ${NEXUS_DATA}/tmp ${SONATYPE_WO
   && ln -s ${NEXUS_DATA} ${SONATYPE_WORK}/nexus3 \
   && chown -R nexus:nexus ${NEXUS_DATA}
 
+# Copy runnable script
+COPY run.sh /
+
 VOLUME ${NEXUS_DATA}
 
 EXPOSE 8081
-USER nexus
+
 WORKDIR ${NEXUS_HOME}
 
 ENV INSTALL4J_ADD_VM_PARAMS="-Xms1200m -Xmx1200m"
 
-CMD ["bin/nexus", "run"]
+CMD ["/run.sh"]
