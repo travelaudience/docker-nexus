@@ -2,11 +2,11 @@ FROM quay.io/pires/docker-jre:8u131
 
 LABEL maintainer pjpires@gmail.com
 
-ARG NEXUS_VERSION="3.3.1-01"
+ENV NEXUS_VERSION 3.3.1-01
 ENV NEXUS_DOWNLOAD_URL "https://download.sonatype.com/nexus/3"
 ENV NEXUS_TARBALL_URL "${NEXUS_DOWNLOAD_URL}/nexus-${NEXUS_VERSION}-unix.tar.gz"
 ENV NEXUS_TARBALL_ASC_URL "${NEXUS_DOWNLOAD_URL}/nexus-${NEXUS_VERSION}-unix.tar.gz.asc"
-ENV GPG_KEY "0374CF2E8DD1BDFD"
+ENV GPG_KEY 0374CF2E8DD1BDFD
 
 ENV SONATYPE_DIR /opt/sonatype
 ENV NEXUS_HOME "${SONATYPE_DIR}/nexus"
@@ -47,6 +47,10 @@ RUN sed \
 RUN mkdir -p ${NEXUS_DATA}/etc ${NEXUS_DATA}/log ${NEXUS_DATA}/tmp ${SONATYPE_WORK} \
   && ln -s ${NEXUS_DATA} ${SONATYPE_WORK}/nexus3 \
   && chown -R nexus:nexus ${NEXUS_DATA}
+
+# Replace logback configuration
+COPY logback.xml ${NEXUS_HOME}/etc/logback/logback.xml
+COPY logback-access.xml ${NEXUS_HOME}/etc/logback/logback-access.xml
 
 # Copy runnable script
 COPY run.sh /
