@@ -1,6 +1,6 @@
 FROM quay.io/pires/docker-jre:8u131
 
-LABEL maintainer pjpires@gmail.com
+LABEL maintainer devops@travelaudience.com
 
 ENV NEXUS_VERSION 3.3.1-01
 ENV NEXUS_DOWNLOAD_URL "https://download.sonatype.com/nexus/3"
