@@ -1,4 +1,4 @@
-FROM quay.io/pires/docker-jre:8u131
+FROM quay.io/pires/docker-jre:8u131_alpine3.6.1
 
 LABEL maintainer devops@travelaudience.com
 
