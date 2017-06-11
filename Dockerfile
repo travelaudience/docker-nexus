@@ -15,7 +15,7 @@ ENV NEXUS_CONTEXT ''
 ENV SONATYPE_WORK ${SONATYPE_DIR}/sonatype-work
 
 # Install nexus
-RUN apk add --no-cache --update bash ca-certificates su-exec util-linux
+RUN apk add --no-cache --update bash ca-certificates runit su-exec util-linux
 RUN apk add --no-cache -t .build-deps wget gnupg openssl \
   && cd /tmp \
   && echo "===> Installing Nexus ${NEXUS_VERSION}..." \
@@ -53,7 +53,7 @@ COPY logback.xml ${NEXUS_HOME}/etc/logback/logback.xml
 COPY logback-access.xml ${NEXUS_HOME}/etc/logback/logback-access.xml
 
 # Copy runnable script
-COPY run.sh /
+COPY run /etc/service/nexus/run
 
 VOLUME ${NEXUS_DATA}
 
@@ -63,4 +63,4 @@ WORKDIR ${NEXUS_HOME}
 
 ENV INSTALL4J_ADD_VM_PARAMS="-Xms1200m -Xmx1200m"
 
-CMD ["/run.sh"]
+CMD ["/sbin/runsvdir", "-P", "/etc/service"]
