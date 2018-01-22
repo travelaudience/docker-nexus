@@ -1,4 +1,4 @@
-FROM quay.io/pires/docker-jre:8u151
+FROM quay.io/pires/docker-jre:8u151_cpufix
 
 LABEL maintainer devops@travelaudience.com
 
