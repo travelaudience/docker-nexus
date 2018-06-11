@@ -2,7 +2,7 @@ FROM quay.io/pires/docker-jre:8u151_cpufix
 
 LABEL maintainer devops@travelaudience.com
 
-ENV NEXUS_VERSION 3.11.0-01
+ENV NEXUS_VERSION 3.12.1-01
 ENV NEXUS_DOWNLOAD_URL "https://download.sonatype.com/nexus/3"
 ENV NEXUS_TARBALL_URL "${NEXUS_DOWNLOAD_URL}/nexus-${NEXUS_VERSION}-unix.tar.gz"
 ENV NEXUS_TARBALL_ASC_URL "${NEXUS_DOWNLOAD_URL}/nexus-${NEXUS_VERSION}-unix.tar.gz.asc"
