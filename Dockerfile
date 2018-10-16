@@ -14,8 +14,13 @@ ENV NEXUS_DATA /nexus-data
 ENV NEXUS_CONTEXT ''
 ENV SONATYPE_WORK ${SONATYPE_DIR}/sonatype-work
 
+ARG user=nexus
+ARG group=nexus
+ARG uid=1000
+ARG gid=1000
+
 # Install nexus
-RUN apk add --no-cache --update bash ca-certificates runit su-exec util-linux
+RUN apk add --no-cache --update bash ca-certificates runit tini util-linux
 RUN apk add --no-cache -t .build-deps wget gnupg openssl \
   && cd /tmp \
   && echo "===> Installing Nexus ${NEXUS_VERSION}..." \
@@ -30,8 +35,9 @@ RUN apk add --no-cache -t .build-deps wget gnupg openssl \
   && mv nexus-$NEXUS_VERSION $NEXUS_HOME \
   && cd $NEXUS_HOME \
   && ls -las \
-  && adduser -h $NEXUS_DATA -DH -s /sbin/nologin nexus \
-  && chown -R nexus:nexus $NEXUS_HOME \
+  && addgroup -g ${gid} ${group} \
+  && adduser -h $NEXUS_DATA -u ${uid} -G ${group} -s /sbin/nologin -DH ${user} \
+  && chown -R ${user}:${group} $NEXUS_HOME \
   && rm -rf /tmp/* \
   && apk del --purge .build-deps
 
@@ -46,14 +52,13 @@ RUN sed \
 
 RUN mkdir -p ${NEXUS_DATA}/etc ${NEXUS_DATA}/log ${NEXUS_DATA}/tmp ${SONATYPE_WORK} \
   && ln -s ${NEXUS_DATA} ${SONATYPE_WORK}/nexus3 \
-  && chown -R nexus:nexus ${NEXUS_DATA}
+  && chown -R ${user}:${group} ${NEXUS_DATA}
 
 # Replace logback configuration
 COPY logback.xml ${NEXUS_HOME}/etc/logback/logback.xml
 COPY logback-access.xml ${NEXUS_HOME}/etc/logback/logback-access.xml
 
-# Copy runnable script
-COPY run /etc/service/nexus/run
+RUN chown ${user}:${group} ${NEXUS_HOME}/etc/logback/logback.xml ${NEXUS_HOME}/etc/logback/logback-access.xml
 
 VOLUME ${NEXUS_DATA}
 
@@ -63,4 +68,6 @@ WORKDIR ${NEXUS_HOME}
 
 ENV INSTALL4J_ADD_VM_PARAMS="-Xms1200m -Xmx1200m"
 
-CMD ["/sbin/runsvdir", "-P", "/etc/service"]
+USER ${user}
+
+ENTRYPOINT ["/sbin/tini", "--", "/opt/sonatype/nexus/bin/nexus", "run"]
