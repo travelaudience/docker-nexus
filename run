@@ -2,4 +2,13 @@
 
 chown -R nexus:nexus /opt/sonatype
 chown -R nexus:nexus /nexus-data
+if [[ -n "${ELASTICSEARCH_MAX_RESULT_WINDOW}" ]]
+then
+    echo >> /opt/sonatype/nexus/etc/fabric/elasticsearch.yml
+    echo "# https://issues.sonatype.org/browse/NEXUS-16917" \
+        >> /opt/sonatype/nexus/etc/fabric/elasticsearch.yml
+    echo "index.max_result_window: ${ELASTICSEARCH_MAX_RESULT_WINDOW}" \
+        >> /opt/sonatype/nexus/etc/fabric/elasticsearch.yml
+    echo >> /opt/sonatype/nexus/etc/fabric/elasticsearch.yml
+fi
 su-exec nexus /opt/sonatype/nexus/bin/nexus run
