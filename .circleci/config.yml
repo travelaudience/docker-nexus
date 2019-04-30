@@ -1,0 +1,134 @@
+version: 2
+jobs:
+  build:
+    environment:
+      ECR_REPOSITORY: 762491548226.dkr.ecr.us-east-1.amazonaws.com/parkassist/sonatype-nexus
+      REGISTRY_ID: "762491548226"
+    docker:
+    - image: docker:17.09.0-ce-git
+    working_directory: /sonatype-nexus
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Setup ECR Login
+          command: |
+            apk add --no-cache py-pip
+            pip install awscli
+            eval $(aws ecr get-login --no-include-email --registry-ids ${REGISTRY_ID})
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker load -i /caches/sonatype-nexus.tar | true
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build --cache-from=${ECR_REPOSITORY}:latest -t ${ECR_REPOSITORY}:latest .
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/sonatype-nexus.tar ${ECR_REPOSITORY}:latest
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - /caches/sonatype-nexus.tar
+      - deploy:
+          name: Push to ECR
+          command: |
+            docker tag "${ECR_REPOSITORY}:latest" "${ECR_REPOSITORY}:${CIRCLE_SHA1}"
+            docker push "${ECR_REPOSITORY}:${CIRCLE_SHA1}"
+  test:
+    docker:
+      - image: quay.io/reactiveops/ci-images:v7.2.9-node6
+    working_directory: /sonatype-nexus
+    steps:
+      - checkout
+      - run:
+          name: Set Environment Variables
+          command: |
+            echo 'export CI_SHA1=$CIRCLE_SHA1' >> ${BASH_ENV}
+            echo 'export CI_BRANCH=$CIRCLE_BRANCH' >> ${BASH_ENV}
+            echo 'export CI_BUILD_NUM=$CIRCLE_BUILD_NUM' >> ${BASH_ENV}
+            echo 'export CI_TAG=$CIRCLE_TAG' >> ${BASH_ENV}
+            echo 'export ROK8S_INSTALL_PATH=${HOME}' >> ${BASH_ENV}
+            echo 'export POLL_TRIES=300' >> ${BASH_ENV}
+      - run: prepare-kubectl
+      - run: kubectl config use-context production.parkassist.com
+      - run:
+          name: Run test job
+          command: ./test.sh
+      - store_artifacts:
+          path: test_results.log
+          destination: test_results.log
+
+  staging:
+    docker:
+      - image: quay.io/reactiveops/ci-images:v7.23.1-node6
+    working_directory: /sonatype-nexus
+    steps:
+      - checkout
+      - run:
+          name: Set Environment Variables
+          command: |
+            echo 'export CI_SHA1=$CIRCLE_SHA1' >> ${BASH_ENV}
+            echo 'export CI_BRANCH=$CIRCLE_BRANCH' >> ${BASH_ENV}
+            echo 'export CI_BUILD_NUM=$CIRCLE_BUILD_NUM' >> ${BASH_ENV}
+            echo 'export CI_TAG=$CIRCLE_TAG' >> ${BASH_ENV}
+            echo 'export ROK8S_INSTALL_PATH=${HOME}' >> ${BASH_ENV}
+            echo 'export POLL_TRIES=300' >> ${BASH_ENV}
+      - run: prepare-kubectl
+      - run: kubectl config use-context staging.pastaging.net
+      - run: k8s-deploy-and-verify -f deploy/staging.config
+
+  production:
+    docker:
+      - image: quay.io/reactiveops/ci-images:v7.23.1-node6
+    working_directory: /sonatype-nexus
+    steps:
+      - checkout
+      - run:
+          name: Set Environment Variables
+          command: |
+            echo 'export CI_SHA1=$CIRCLE_SHA1' >> ${BASH_ENV}
+            echo 'export CI_BRANCH=$CIRCLE_BRANCH' >> ${BASH_ENV}
+            echo 'export CI_BUILD_NUM=$CIRCLE_BUILD_NUM' >> ${BASH_ENV}
+            echo 'export CI_TAG=$CIRCLE_TAG' >> ${BASH_ENV}
+            echo 'export ROK8S_INSTALL_PATH=${HOME}' >> ${BASH_ENV}
+            echo 'export POLL_TRIES=300' >> ${BASH_ENV}
+      - run: prepare-kubectl
+      - run: kubectl config use-context production.parkassist.com
+      - run: k8s-deploy-and-verify -f deploy/production.config
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - test:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
+      - staging:
+          requires:
+            - test
+          filters:
+            branches:
+              only: /staging/
+      - production:
+          requires:
+            - test
+          filters:
+            tags:
+              only: /^release-.*/
+            branches:
+              ignore: /.*/
