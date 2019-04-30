@@ -2,8 +2,8 @@ version: 2
 jobs:
   build:
     environment:
-      ECR_REPOSITORY: 762491548226.dkr.ecr.us-east-1.amazonaws.com/parkassist/sonatype-nexus
-      REGISTRY_ID: "762491548226"
+      ECR_REPOSITORY: 308882746353.dkr.ecr.us-east-1.amazonaws.com/parkassist/sonatype-nexus
+      REGISTRY_ID: "308882746353"
     docker:
     - image: docker:17.09.0-ce-git
     working_directory: /sonatype-nexus
@@ -43,41 +43,6 @@ jobs:
             docker tag "${ECR_REPOSITORY}:latest" "${ECR_REPOSITORY}:${CIRCLE_SHA1}"
             docker push "${ECR_REPOSITORY}:${CIRCLE_SHA1}"
 
-  staging:
-    docker:
-      - image: quay.io/reactiveops/ci-images:v7.23.1-node6
-    working_directory: /sonatype-nexus
-    steps:
-      - checkout
-      - run: prepare-kubectl
-      - run: kubectl config use-context staging.pastaging.net
-      - run:
-          name: Deploy to kubernetes
-          command: |
-            export CI_SHA1=$CIRCLE_SHA1
-            export CI_BRANCH=$CIRCLE_BRANCH
-            export CI_BUILD_NUM=$CIRCLE_BUILD_NUM
-            export CI_TAG=$CIRCLE_TAG
-            k8s-deploy-and-verify -f deploy/staging.config
-
-
-  production:
-    docker:
-      - image: quay.io/reactiveops/ci-images:v7.23.1-node6
-    working_directory: /sonatype-nexus
-    steps:
-      - checkout
-      - run: prepare-kubectl
-      - run: kubectl config use-context production.parkassist.com
-      - run:
-          name: Deploy to kubernetes
-          command: |
-            export CI_SHA1=$CIRCLE_SHA1
-            export CI_BRANCH=$CIRCLE_BRANCH
-            export CI_BUILD_NUM=$CIRCLE_BUILD_NUM
-            export CI_TAG=$CIRCLE_TAG
-            k8s-deploy-and-verify -f deploy/production.config
-
 workflows:
   version: 2
   build_and_deploy:
@@ -87,19 +52,3 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - staging:
-          context: org-global
-          requires:
-            - build
-          filters:
-            branches:
-              only: /master/
-      - production:
-          context: org-global
-          requires:
-            - build
-          filters:
-            tags:
-              only: /^release-.*/
-            branches:
-              ignore: /.*/
