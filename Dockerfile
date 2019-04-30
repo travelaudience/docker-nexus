@@ -17,6 +17,8 @@ ENV SONATYPE_WORK ${SONATYPE_DIR}/sonatype-work
 # Install nexus
 RUN apk add --no-cache --update bash ca-certificates runit su-exec util-linux
 RUN apk add --no-cache -t .build-deps wget gnupg openssl \
+  && apk --update add python py-pip \
+  && pip install --upgrade awscli \
   && cd /tmp \
   && echo "===> Installing Nexus ${NEXUS_VERSION}..." \
   && wget -O nexus.tar.gz $NEXUS_TARBALL_URL; \
