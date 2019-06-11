@@ -1,8 +1,8 @@
-FROM quay.io/pires/docker-jre:8u191
+FROM adoptopenjdk/openjdk8:x86_64-alpine-jdk8u212-b03-slim
 
 LABEL maintainer devops@travelaudience.com
 
-ENV NEXUS_VERSION 3.15.2-01
+ENV NEXUS_VERSION 3.16.2-01
 ENV NEXUS_DOWNLOAD_URL "https://download.sonatype.com/nexus/3"
 ENV NEXUS_TARBALL_URL "${NEXUS_DOWNLOAD_URL}/nexus-${NEXUS_VERSION}-unix.tar.gz"
 ENV NEXUS_TARBALL_ASC_URL "${NEXUS_DOWNLOAD_URL}/nexus-${NEXUS_VERSION}-unix.tar.gz.asc"
