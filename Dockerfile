@@ -54,9 +54,8 @@ RUN mkdir -p ${NEXUS_DATA}/etc ${NEXUS_DATA}/log ${NEXUS_DATA}/tmp ${SONATYPE_WO
   && ln -s ${NEXUS_DATA} ${SONATYPE_WORK}/nexus3 \
   && chown -R nexus:nexus ${NEXUS_DATA}
 
-# Replace logback configuration
-COPY logback.xml ${NEXUS_HOME}/etc/logback/logback.xml
-COPY logback-access.xml ${NEXUS_HOME}/etc/logback/logback-access.xml
+# Update logback configuration to store 30 days logs rather than 90 days default
+RUN sed -i -e 's|<maxHistory>90</maxHistory>|<maxHistory>30</maxHistory>|g' ${NEXUS_HOME}/etc/logback/logback*.xml
 
 # Copy runnable script
 COPY run /etc/service/nexus/run
