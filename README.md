@@ -7,5 +7,5 @@ A container image for Sonatype Nexus Repository Manager OSS, based on Alpine Lin
 
 * Alpine Linux 3.10
 * OpenJDK JRE 8u212
-* Nexus Repository Manager OSS 3.17.0 ([release notes](https://help.sonatype.com/repomanager3/release-notes/2019-release-notes#id-2019ReleaseNotes-RepositoryManager3.17.0))
+* Nexus Repository Manager OSS 3.19.0 ([release notes](https://help.sonatype.com/repomanager3/release-notes/2019-release-notes#id-2019ReleaseNotes-RepositoryManager3.19.0))
 
