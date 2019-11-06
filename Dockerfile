@@ -1,12 +1,14 @@
 FROM alpine:3.10
 
+ARG version=3.17.0-01
+
 LABEL maintainer devops@travelaudience.com
 
 # java
 ENV JAVA_HOME=/usr/lib/jvm/default-jvm/jre
 
 # nexus
-ENV NEXUS_VERSION 3.17.0-01
+ENV NEXUS_VERSION $version
 ENV NEXUS_DOWNLOAD_URL "https://download.sonatype.com/nexus/3"
 ENV NEXUS_TARBALL_URL "${NEXUS_DOWNLOAD_URL}/nexus-${NEXUS_VERSION}-unix.tar.gz"
 ENV NEXUS_TARBALL_ASC_URL "${NEXUS_DOWNLOAD_URL}/nexus-${NEXUS_VERSION}-unix.tar.gz.asc"
