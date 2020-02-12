@@ -1,5 +1,8 @@
 #!/bin/sh
 
-find /opt/sonatype ! \( -user nexus -and -group nexus \) -exec chown nexus:nexus {} \;
-find /nexus-data   ! \( -user nexus -and -group nexus \) -exec chown nexus:nexus {} \;
+if [ "$NEXUS_DATA_CHOWN" == "true" ]; then
+    chown -R nexus:nexus /opt/sonatype
+    chown -R nexus:nexus /nexus-data
+fi
+
 su-exec nexus /opt/sonatype/nexus/bin/nexus run

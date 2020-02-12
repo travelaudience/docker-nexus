@@ -17,6 +17,7 @@ ENV NEXUS_HOME "${SONATYPE_DIR}/nexus"
 ENV NEXUS_DATA /nexus-data
 ENV NEXUS_CONTEXT ''
 ENV SONATYPE_WORK ${SONATYPE_DIR}/sonatype-work
+ENV NEXUS_DATA_CHOWN "true"
 
 # Install prerequisites
 RUN apk add --no-cache --update bash ca-certificates runit su-exec util-linux openjdk8-jre
@@ -27,10 +28,10 @@ RUN apk add --no-cache -t .build-deps wget gnupg openssl \
   && echo "===> Installing Nexus ${NEXUS_VERSION}..." \
   && wget -O nexus.tar.gz $NEXUS_TARBALL_URL; \
   wget -O nexus.tar.gz.asc $NEXUS_TARBALL_ASC_URL; \
-    export GNUPGHOME="$(mktemp -d)"; \
-    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys $GPG_KEY; \
-    gpg --batch --verify nexus.tar.gz.asc nexus.tar.gz; \
-    rm -r $GNUPGHOME nexus.tar.gz.asc; \
+  export GNUPGHOME="$(mktemp -d)"; \
+  gpg --keyserver ha.pool.sks-keyservers.net --recv-keys $GPG_KEY; \
+  gpg --batch --verify nexus.tar.gz.asc nexus.tar.gz; \
+  rm -r $GNUPGHOME nexus.tar.gz.asc; \
   tar -xf nexus.tar.gz \
   && mkdir -p $SONATYPE_DIR \
   && mv nexus-$NEXUS_VERSION $NEXUS_HOME \
@@ -43,12 +44,12 @@ RUN apk add --no-cache -t .build-deps wget gnupg openssl \
 
 # Configure nexus
 RUN sed \
-    -e '/^nexus-context/ s:$:${NEXUS_CONTEXT}:' \
-    -i ${NEXUS_HOME}/etc/nexus-default.properties \
+  -e '/^nexus-context/ s:$:${NEXUS_CONTEXT}:' \
+  -i ${NEXUS_HOME}/etc/nexus-default.properties \
   && sed \
-    -e '/^-Xms/d' \
-    -e '/^-Xmx/d' \
-    -i ${NEXUS_HOME}/bin/nexus.vmoptions
+  -e '/^-Xms/d' \
+  -e '/^-Xmx/d' \
+  -i ${NEXUS_HOME}/bin/nexus.vmoptions
 
 RUN mkdir -p ${NEXUS_DATA}/etc ${NEXUS_DATA}/log ${NEXUS_DATA}/tmp ${SONATYPE_WORK} \
   && ln -s ${NEXUS_DATA} ${SONATYPE_WORK}/nexus3 \
