@@ -1,8 +1,12 @@
-FROM quay.io/pires/docker-jre:8u191
+FROM alpine:3.10
 
 LABEL maintainer devops@travelaudience.com
 
-ENV NEXUS_VERSION 3.15.2-01
+# java
+ENV JAVA_HOME=/usr/lib/jvm/default-jvm/jre
+
+# nexus
+ENV NEXUS_VERSION 3.21.1-01
 ENV NEXUS_DOWNLOAD_URL "https://download.sonatype.com/nexus/3"
 ENV NEXUS_TARBALL_URL "${NEXUS_DOWNLOAD_URL}/nexus-${NEXUS_VERSION}-unix.tar.gz"
 ENV NEXUS_TARBALL_ASC_URL "${NEXUS_DOWNLOAD_URL}/nexus-${NEXUS_VERSION}-unix.tar.gz.asc"
@@ -13,9 +17,12 @@ ENV NEXUS_HOME "${SONATYPE_DIR}/nexus"
 ENV NEXUS_DATA /nexus-data
 ENV NEXUS_CONTEXT ''
 ENV SONATYPE_WORK ${SONATYPE_DIR}/sonatype-work
+ENV NEXUS_DATA_CHOWN "true"
+
+# Install prerequisites
+RUN apk add --no-cache --update bash ca-certificates runit su-exec util-linux openjdk8-jre
 
 # Install nexus
-RUN apk add --no-cache --update bash ca-certificates runit su-exec util-linux
 RUN apk add --no-cache -t .build-deps wget gnupg openssl \
   && apk --update add python py-pip \
   && pip install --upgrade awscli \
@@ -34,7 +41,7 @@ RUN apk add --no-cache -t .build-deps wget gnupg openssl \
   && ls -las \
   && adduser -h $NEXUS_DATA -DH -s /sbin/nologin nexus \
   && chown -R nexus:nexus $NEXUS_HOME \
-  && rm -rf /tmp/* \
+  && rm -rf /tmp/* /var/cache/apk/* \
   && apk del --purge .build-deps
 
 # Configure nexus
@@ -50,9 +57,8 @@ RUN mkdir -p ${NEXUS_DATA}/etc ${NEXUS_DATA}/log ${NEXUS_DATA}/tmp ${SONATYPE_WO
   && ln -s ${NEXUS_DATA} ${SONATYPE_WORK}/nexus3 \
   && chown -R nexus:nexus ${NEXUS_DATA}
 
-# Replace logback configuration
-COPY logback.xml ${NEXUS_HOME}/etc/logback/logback.xml
-COPY logback-access.xml ${NEXUS_HOME}/etc/logback/logback-access.xml
+# Update logback configuration to store 30 days logs rather than 90 days default
+RUN sed -i -e 's|<maxHistory>90</maxHistory>|<maxHistory>30</maxHistory>|g' ${NEXUS_HOME}/etc/logback/logback*.xml
 
 # Copy runnable script
 COPY run /etc/service/nexus/run
