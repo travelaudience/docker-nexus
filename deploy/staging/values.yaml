@@ -8,7 +8,7 @@ sonatype-nexus:
       type: Recreate
     nexus:
       imageName: 308882746353.dkr.ecr.us-east-1.amazonaws.com/parkassist/sonatype-nexus
-      imageTag: 6e5bf287d8e55a7fad56edfb5af58207851ae17c
+      imageTag: 03e606a0ba345bf3ac7a19766af665ef5f06b1a7
       resources:
         requests:
           cpu: 250m
