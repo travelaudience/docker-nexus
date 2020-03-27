@@ -1,0 +1,41 @@
+sonatype-nexus:
+  namespace: sonatype-nexus
+  set-values:
+    statefulset:
+      enabled: true
+    replicaCount: 1
+    deploymentStrategy:
+      type: Recreate
+    nexus:
+      imageName: 308882746353.dkr.ecr.us-east-1.amazonaws.com/parkassist/sonatype-nexus
+      imageTag: 6e5bf287d8e55a7fad56edfb5af58207851ae17c
+      resources:
+        requests:
+          cpu: 250m
+          memory: 4800Mi
+    nexusProxy:
+      enabled: false
+    persistence:
+      storageClass: gp2
+      pdName: nexus-data-disk
+      fsType: ext4
+    ingress:
+      tls:
+        enabled: false
+    serviceAccount:
+      create: false
+    service:
+      enabled: true
+      name: sonatype-nexus-lb
+      type: LoadBalancer
+      labels:
+        app: "sonatype-nexus"
+        dns: "route53"
+      annotations:
+        domainName: "nexus.pastaging.net"
+        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+        service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:us-east-1:762491548226:certificate/66a5ddf8-2806-4a5e-8bd5-95456bb6698a"
+      ports:
+      - name: https
+        targetPort: 8081
+        port: 443
