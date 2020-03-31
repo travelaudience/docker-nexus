@@ -27,7 +27,7 @@ jobs:
       ECR_REPOSITORY: 308882746353.dkr.ecr.us-east-1.amazonaws.com/parkassist/sonatype-nexus
       REGISTRY_ID: "308882746353"
     docker:
-    - image: docker:17.09.0-ce-git
+    - image: quay.io/reactiveops/ci-images:v11.1-stretch
     working_directory: /sonatype-nexus
     steps:
       - checkout
