@@ -3,7 +3,6 @@ statefulset:
 replicaCount: 1
 nexus:
   imageName: 308882746353.dkr.ecr.us-east-1.amazonaws.com/parkassist/sonatype-nexus
-  imageTag: 03e606a0ba345bf3ac7a19766af665ef5f06b1a7
   resources:
     requests:
       cpu: 250m
