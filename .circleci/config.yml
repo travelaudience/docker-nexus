@@ -19,7 +19,7 @@ references:
       - run: prepare-kubectl
       - run: kubectl config use-context ${KUBE_CONTEXT}
       - run: helm repo add oteemocharts https://oteemo.github.io/charts
-      - run: helm upgrade --install sonatype-nexus oteemocharts/sonatype-nexus -n sonatype-nexus --values ${ROK8S_CONFIG}
+      - run: helm upgrade --install sonatype-nexus oteemocharts/sonatype-nexus -n sonatype-nexus --values ${ROK8S_CONFIG} --set nexus.imageTag=${CIRCLE_SHA1}
 
 jobs:
   build:
