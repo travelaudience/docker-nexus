@@ -35,8 +35,7 @@ jobs:
       - run:
           name: Setup ECR Login
           command: |
-            apk add --no-cache py-pip
-            pip install awscli
+            prepare-awscli
             eval $(aws ecr get-login --no-include-email --registry-ids ${REGISTRY_ID})
       - restore_cache:
           keys:
