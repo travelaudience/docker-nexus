@@ -4,9 +4,12 @@ replicaCount: 1
 nexus:
   imageName: 308882746353.dkr.ecr.us-east-1.amazonaws.com/parkassist/sonatype-nexus
   resources:
+    limits:
+      cpu: 2 
+      memory: 2000Mi
     requests:
-      cpu: 250m
-      memory: 4800Mi
+      cpu: 2
+      memory: 2000Mi
 nexusProxy:
   enabled: false
 persistence:
@@ -33,3 +36,8 @@ service:
   - name: https
     targetPort: 8081
     port: 443
+tolerations:
+  - key: "dedicated"
+    operator: "Equal"
+    value: "ondemand"
+    effect: "NoSchedule"
