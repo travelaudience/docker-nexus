@@ -5,6 +5,9 @@ LABEL maintainer devops@travelaudience.com
 # java
 ENV JAVA_HOME=/usr/lib/jvm/default-jvm/jre
 
+# nexus latest binary release link
+# https://help.sonatype.com/repomanager3/download/download-archives---repository-manager-3
+
 # nexus
 ENV NEXUS_VERSION "3.26.1-02"
 ENV NEXUS_DOWNLOAD_URL "https://download.sonatype.com/nexus/3"
