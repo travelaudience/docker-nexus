@@ -2,6 +2,11 @@ FROM alpine:3.12
 
 LABEL maintainer devops@travelaudience.com
 
+# User settings for nexus user
+ARG UID=1000
+ARG GID=1000
+ARG USER=nexus
+
 # java
 ENV JAVA_HOME=/usr/lib/jvm/default-jvm/jre
 
@@ -20,7 +25,7 @@ ENV NEXUS_HOME "${SONATYPE_DIR}/nexus"
 ENV NEXUS_DATA /nexus-data
 ENV NEXUS_CONTEXT ''
 ENV SONATYPE_WORK ${SONATYPE_DIR}/sonatype-work
-ENV NEXUS_DATA_CHOWN "true"
+ENV HOME ${NEXUS_HOME}
 
 # Install prerequisites
 RUN apk add --no-cache --update bash ca-certificates runit su-exec util-linux openjdk8-jre
@@ -40,8 +45,8 @@ RUN apk add --no-cache -t .build-deps wget gnupg openssl \
   && mv nexus-$NEXUS_VERSION $NEXUS_HOME \
   && cd $NEXUS_HOME \
   && ls -las \
-  && adduser -h $NEXUS_DATA -DH -s /sbin/nologin nexus \
-  && chown -R nexus:nexus $NEXUS_HOME \
+  && adduser -h $NEXUS_DATA -DH -s /sbin/nologin ${USER} \
+  && chown -R ${USER}:0 $NEXUS_HOME \ # for OpenShift restricted SCC compatibility
   && rm -rf /tmp/* /var/cache/apk/* \
   && apk del --purge .build-deps
 
@@ -56,13 +61,14 @@ RUN sed \
 
 RUN mkdir -p ${NEXUS_DATA}/etc ${NEXUS_DATA}/log ${NEXUS_DATA}/tmp ${SONATYPE_WORK} \
   && ln -s ${NEXUS_DATA} ${SONATYPE_WORK}/nexus3 \
-  && chown -R nexus:nexus ${NEXUS_DATA}
+  && chown -R ${USER}:0 ${NEXUS_DATA} ${NEXUS_HOME} /etc/service/nexus /opt/sonatype \ # to run as nonroot and for OpenShift restricted SCC compatibility
+  && chmod -R g=u ${NEXUS_HOME} ${NEXUS_DATA} /etc/service/nexus /opt/sonatype \ # to run as nonroot and for OpenShift restricted SCC compatibility
 
 # Update logback configuration to store 30 days logs rather than 90 days default
 RUN sed -i -e 's|<maxHistory>90</maxHistory>|<maxHistory>30</maxHistory>|g' ${NEXUS_HOME}/etc/logback/logback*.xml
 
-# Copy runnable script
-COPY run /etc/service/nexus/run
+# Important to specify nonroot user and by the uid for compatibility with K8s PSPs and OpenShift SCCs
+USER ${UID}
 
 VOLUME ${NEXUS_DATA}
 
@@ -72,4 +78,4 @@ WORKDIR ${NEXUS_HOME}
 
 ENV INSTALL4J_ADD_VM_PARAMS="-Xms1200m -Xmx1200m"
 
-CMD ["/sbin/runsvdir", "-P", "/etc/service"]
+CMD ["/opt/sonatype/nexus/bin/nexus", "run"]
