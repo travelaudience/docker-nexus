@@ -8,14 +8,14 @@ A container image for Sonatype Nexus Repository Manager OSS, based on Alpine Lin
 
 * Alpine Linux 3.14
 * OpenJDK JRE 8u212
-* Nexus Repository Manager OSS 3.37.0 ([release notes](https://help.sonatype.com/repomanager3/product-information/release-notes/2021-release-notes/nexus-repository-3.37.0-release-notes))
+* Nexus Repository Manager OSS 3.37.1 ([release notes](https://help.sonatype.com/repomanager3/product-information/release-notes/2021-release-notes/nexus-repository-3.37.0---3.37.1-release-notes))
 
 ## Running
 
 Running it locally (for the latest tag, check [quay.io/repository/travelaudience/docker-nexus](https://quay.io/repository/travelaudience/docker-nexus?tab=tags):
 
 ```shell
-docker run -p 8081:8081 --name nexus quay.io/travelaudience/docker-nexus:3.37.0-01
+docker run -p 8081:8081 --name nexus quay.io/travelaudience/docker-nexus:3.37.1-01
 ```
 
 ## Reasoning
