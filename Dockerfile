@@ -1,6 +1,6 @@
 FROM alpine:3.16
 
-LABEL maintainer devops@travelaudience.com
+LABEL maintainer devops@elm.sa
 
 # java
 ENV JAVA_HOME=/usr/lib/jvm/default-jvm/jre
