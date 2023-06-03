@@ -1,6 +1,6 @@
-FROM alpine:3.16
+FROM alpine:3.17
 
-LABEL maintainer devops@elm.sa
+LABEL maintainer platform@elm.sa
 
 # java
 ENV JAVA_HOME=/usr/lib/jvm/default-jvm/jre
@@ -9,7 +9,7 @@ ENV JAVA_HOME=/usr/lib/jvm/default-jvm/jre
 # https://help.sonatype.com/repomanager3/download/download-archives---repository-manager-3
 
 # nexus
-ENV NEXUS_VERSION "3.42.0-01"
+ENV NEXUS_VERSION "3.54.1-01"
 ENV NEXUS_DOWNLOAD_URL "https://download.sonatype.com/nexus/3"
 ENV NEXUS_TARBALL_URL "${NEXUS_DOWNLOAD_URL}/nexus-${NEXUS_VERSION}-unix.tar.gz"
 ENV NEXUS_TARBALL_ASC_URL "${NEXUS_DOWNLOAD_URL}/nexus-${NEXUS_VERSION}-unix.tar.gz.asc"
