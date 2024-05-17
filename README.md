@@ -15,7 +15,7 @@ A container image for Sonatype Nexus Repository Manager OSS, based on Alpine Lin
 Running it locally (for the latest tag, check [quay.io/repository/travelaudience/docker-nexus](https://quay.io/repository/travelaudience/docker-nexus?tab=tags):
 
 ```shell
-docker run -p 8081:8081 --name nexus quay.io/travelaudience/docker-nexus:3.68.1-01
+docker run -p 8081:8081 --name nexus quay.io/travelaudience/docker-nexus:3.68.1-02
 ```
 
 ## Reasoning
