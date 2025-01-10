@@ -1,4 +1,4 @@
-FROM alpine:3.16
+FROM alpine:3.21
 
 LABEL maintainer devops@travelaudience.com
 
@@ -9,10 +9,10 @@ ENV JAVA_HOME=/usr/lib/jvm/default-jvm/jre
 # https://help.sonatype.com/repomanager3/download/download-archives---repository-manager-3
 
 # nexus
-ENV NEXUS_VERSION "3.42.0-01"
+ENV NEXUS_VERSION "3.70.3-01"
 ENV NEXUS_DOWNLOAD_URL "https://download.sonatype.com/nexus/3"
-ENV NEXUS_TARBALL_URL "${NEXUS_DOWNLOAD_URL}/nexus-${NEXUS_VERSION}-unix.tar.gz"
-ENV NEXUS_TARBALL_ASC_URL "${NEXUS_DOWNLOAD_URL}/nexus-${NEXUS_VERSION}-unix.tar.gz.asc"
+ENV NEXUS_TARBALL_URL "${NEXUS_DOWNLOAD_URL}/nexus-${NEXUS_VERSION}-java8-unix.tar.gz"
+ENV NEXUS_TARBALL_ASC_URL "${NEXUS_DOWNLOAD_URL}/nexus-${NEXUS_VERSION}-java8-unix.tar.gz.asc"
 ENV GPG_KEY 0374CF2E8DD1BDFD
 
 ENV SONATYPE_DIR /opt/sonatype

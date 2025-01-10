@@ -6,9 +6,9 @@ A container image for Sonatype Nexus Repository Manager OSS, based on Alpine Lin
 
 ## Current software
 
-* Alpine Linux 3.14
+* Alpine Linux 3.21
 * OpenJDK JRE 8u212
-* Nexus Repository Manager OSS 3.42.0 ([release notes](https://help.sonatype.com/repomanager3/product-information/release-notes/2022-release-notes/nexus-repository-3.42.0-release-notes))
+* Nexus Repository Manager OSS 3.70.3 ([release notes](https://help.sonatype.com/en/sonatype-nexus-repository-3-70-0-release-notes.html))
 
 ## Running
 
