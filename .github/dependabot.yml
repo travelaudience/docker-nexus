@@ -5,11 +5,11 @@
 
 "updates":
 - "directory": "/"
-  "package-ecosystem": "docker"
+  "package-ecosystem": "terraform"
   "schedule":
     "interval": "weekly"
 - "directory": "/"
-  "package-ecosystem": "gomod"
+  "package-ecosystem": "github-actions"
   "schedule":
     "interval": "weekly"
 "version": 2
